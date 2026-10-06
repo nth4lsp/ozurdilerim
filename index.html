@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#ffe4ec">
+  <title>🥺💕</title>
+  <style>
+    :root {
+      --bg1: #fff0f4;
+      --bg2: #ffd6e2;
+      --pink: #ff5c8a;
+      --pink-dark: #e63e6f;
+      --text: #5a2a3a;
+      --gray: #b9a3ab;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: linear-gradient(160deg, var(--bg1), var(--bg2));
+      -webkit-tap-highlight-color: transparent;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: max(20px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+      text-align: center;
+      overflow-y: auto;
+    }
+    .screen.active {
+      display: flex;
+      animation: fadeIn .6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .message {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.55;
+      background: rgba(255, 255, 255, .7);
+      padding: 16px 18px;
+      border-radius: 18px;
+      box-shadow: 0 6px 20px rgba(230, 62, 111, .12);
+    }
+
+    .pic {
+      width: min(62vw, 34vh, 260px);
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 22px;
+      box-shadow: 0 10px 28px rgba(230, 62, 111, .25);
+    }
+
+    .title {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--pink-dark);
+      overflow-wrap: anywhere;
+    }
+    .title.small { font-size: 19px; }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      justify-content: center;
+      align-items: center;
+      min-height: 56px;
+    }
+
+    button {
+      font: inherit;
+      font-size: 17px;
+      font-weight: 700;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 24px;
+      max-width: 82vw;
+      cursor: pointer;
+      touch-action: manipulation;
+      transition: transform .15s ease;
+    }
+    button:active { transform: scale(.95); }
+
+    .yes {
+      background: var(--pink);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(255, 92, 138, .45);
+    }
+
+    .no {
+      background: #fff;
+      color: var(--gray);
+      border: 2px solid #f1dfe5;
+      transition: left .25s ease, top .25s ease;
+    }
+    .no.running {
+      position: fixed;
+      z-index: 50;
+    }
+
+    .hidden { display: none !important; }
+
+    .fade-in { animation: fadeIn .6s ease; }
+
+    #rain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 5;
+    }
+    .drop {
+      position: absolute;
+      top: -40px;
+      font-weight: 800;
+      color: var(--pink);
+      white-space: nowrap;
+      animation: fall linear forwards;
+    }
+    @keyframes fall {
+      to { transform: translateY(calc(100vh + 80px)) rotate(var(--rot)); }
+    }
+
+    #gift { z-index: 10; }
+    #gift .title {
+      font-size: 28px;
+      background: rgba(255, 255, 255, .8);
+      padding: 18px 22px;
+      border-radius: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Ekran: Özür -->
+  <section id="apology" class="screen active">
+    <div class="card">
+      <p class="message">Dün gece haber vermeyip uyuya kaldığım için ozurdilerb. Nolur affet beni söz veriyorum bundan sonra daha dikkat edicem seni belirsizlikte bırakıp üzdüğüm için ağlattığım için çok ama çok özür dilerim.</p>
+      <img class="pic" src="assets/ozur.png" alt="ozur dılerıb">
+      <p class="title">Beni affettib mi.</p>
+      <div class="buttons">
+        <button id="forgiveYes" class="yes">Affettim</button>
+        <button id="forgiveNo" class="no">Affetmedim</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Ekran: Affetti + şarkı sorusu -->
+  <section id="thanks" class="screen">
+    <div class="card">
+      <img class="pic" src="assets/mua.webp" alt="Mua mua mua">
+      <p class="title small">Seni çok seviob. ÇOK TEŞEKKÜREDERİMAFFETTİĞİNİÇİN</p>
+      <p id="wait" class="title hidden">Bekle daha bitmedi</p>
+      <div id="songButtons" class="buttons hidden">
+        <button id="songYes" class="yes">Olur</button>
+        <button id="songNo" class="no">Yok al şarkınıda git</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Ekran: Hediye -->
+  <section id="gift" class="screen">
+    <p class="title">Buda özür hediyem olsun.</p>
+    <button id="playFallback" class="yes hidden">▶</button>
+  </section>
+
+  <div id="rain"></div>
+  <audio id="song" src="assets/take-me-out.mp3" preload="none"></audio>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function show(id) {
+      document.querySelectorAll('.screen').forEach((s) => s.classList.remove('active'));
+      $(id).classList.add('active');
+    }
+
+    // "Hayır" butonunu ekranın rastgele bir yerine kaçırır (evet butonunun üstüne düşmeden).
+    function runAway(noBtn, yesBtn) {
+      const pad = 16;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      if (!noBtn.classList.contains('running')) {
+        const r = noBtn.getBoundingClientRect();
+        noBtn.style.left = r.left + 'px';
+        noBtn.style.top = r.top + 'px';
+        noBtn.classList.add('running');
+      }
+
+      const w = noBtn.offsetWidth;
+      const h = noBtn.offsetHeight;
+      const cur = noBtn.getBoundingClientRect();
+      const yes = yesBtn.getBoundingClientRect();
+
+      let x = pad, y = pad;
+      for (let i = 0; i < 40; i++) {
+        x = pad + Math.random() * Math.max(0, vw - w - pad * 2);
+        y = pad + Math.random() * Math.max(0, vh - h - pad * 2);
+        const overlapsYes = x < yes.right + 10 && x + w > yes.left - 10 &&
+                            y < yes.bottom + 10 && y + h > yes.top - 10;
+        const farEnough = Math.hypot(x - cur.left, y - cur.top) > Math.min(vw, vh) / 3;
+        if (!overlapsYes && farEnough) break;
+      }
+      noBtn.style.left = x + 'px';
+      noBtn.style.top = y + 'px';
+    }
+
+    // Kaçan "hayır" + çift tıklamalı "evet" butonu kurulumu.
+    function setupQuestion({ yesBtn, noBtn, pleas, onAccept }) {
+      let plea = 0;
+      let thanked = false;
+      let lastEscape = 0;
+
+      function escape(e) {
+        if (e) e.preventDefault();
+        const now = Date.now();
+        if (now - lastEscape < 250) return;
+        lastEscape = now;
+
+        runAway(noBtn, yesBtn);
+        if (!thanked) {
+          yesBtn.textContent = pleas[plea];
+          plea = (plea + 1) % pleas.length;
+        }
+      }
+
+      noBtn.addEventListener('pointerdown', escape);
+      noBtn.addEventListener('touchstart', escape, { passive: false });
+      noBtn.addEventListener('click', escape);
+      noBtn.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') escape(e);
+      });
+
+      yesBtn.addEventListener('click', () => {
+        if (!thanked) {
+          thanked = true;
+          yesBtn.textContent = 'coktesekkurederim';
+          return;
+        }
+        noBtn.classList.add('hidden');
+        onAccept();
+      });
+
+      window.addEventListener('resize', () => {
+        if (noBtn.classList.contains('running')) runAway(noBtn, yesBtn);
+      });
+    }
+
+    setupQuestion({
+      yesBtn: $('forgiveYes'),
+      noBtn: $('forgiveNo'),
+      pleas: ['Lütfenaffet.', 'Eminsinmi.', 'Son kararınmı...', 'Lütfeeeeennnn💕💕'],
+      onAccept() {
+        show('thanks');
+        setTimeout(() => {
+          $('wait').classList.remove('hidden');
+          $('wait').classList.add('fade-in');
+        }, 2500);
+        setTimeout(() => {
+          const wait = $('wait');
+          wait.classList.remove('fade-in');
+          void wait.offsetWidth;
+          wait.textContent = 'Sana bi şarkı hediye edimmi özüriçin.';
+          wait.classList.add('fade-in');
+          $('songButtons').classList.remove('hidden');
+          $('songButtons').classList.add('fade-in');
+        }, 5000);
+      },
+    });
+
+    setupQuestion({
+      yesBtn: $('songYes'),
+      noBtn: $('songNo'),
+      pleas: ['Lütfenal.', 'Çokgüzelbak.', 'Alırsan senin dudaklarınıyerib.'],
+      onAccept() {
+        const song = $('song');
+        song.play().catch(() => $('playFallback').classList.remove('hidden'));
+        show('gift');
+        startRain();
+      },
+    });
+
+    // Tarayıcı otomatik çalmayı engellerse küçük bir oynat butonu çıkar.
+    $('playFallback').addEventListener('click', () => {
+      $('song').play().then(() => $('playFallback').classList.add('hidden')).catch(() => {});
+    });
+
+    function startRain() {
+      const rain = $('rain');
+      function drop() {
+        const d = document.createElement('span');
+        d.className = 'drop';
+        d.textContent = '<4444';
+        d.style.left = Math.random() * 100 + 'vw';
+        d.style.fontSize = 14 + Math.random() * 18 + 'px';
+        d.style.opacity = 0.5 + Math.random() * 0.5;
+        d.style.setProperty('--rot', (Math.random() * 80 - 40) + 'deg');
+        const dur = 3 + Math.random() * 3;
+        d.style.animationDuration = dur + 's';
+        rain.appendChild(d);
+        setTimeout(() => d.remove(), dur * 1000 + 100);
+      }
+      setInterval(drop, 180);
+    }
+  </script>
+</body>
+</html>
