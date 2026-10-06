@@ -160,6 +160,58 @@
       padding: 18px 22px;
       border-radius: 20px;
     }
+
+    .player {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, .85);
+      padding: 14px 16px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(230, 62, 111, .15);
+      text-align: left;
+    }
+    .player img {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+    .player .info { flex: 1; min-width: 0; }
+    .player .name { font-weight: 800; }
+    .player .artist { font-size: 14px; color: var(--gray); }
+    .player button {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .spotify {
+      display: inline-block;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 17px;
+      color: #fff;
+      background: #1db954;
+      padding: 14px 26px;
+      border-radius: 999px;
+      box-shadow: 0 6px 18px rgba(29, 185, 84, .4);
+    }
+    .note {
+      margin: -6px 0 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--pink-dark);
+      background: rgba(255, 255, 255, .7);
+      padding: 6px 12px;
+      border-radius: 999px;
+    }
   </style>
 </head>
 <body>
@@ -192,8 +244,19 @@
 
   <!-- 3. Ekran: Hediye -->
   <section id="gift" class="screen">
-    <p class="title">Buda özür hediyem olsun.</p>
-    <button id="playFallback" class="yes hidden">▶</button>
+    <div class="card">
+      <p class="title">Buda özür hediyem olsun.</p>
+      <div class="player">
+        <img src="assets/mua.webp" alt="">
+        <div class="info">
+          <div class="name">Take Me Out</div>
+          <div class="artist">Franz Ferdinand</div>
+        </div>
+        <button id="playPause" class="yes" aria-label="Oynat / Durdur">❚❚</button>
+      </div>
+      <a id="spotify" class="spotify" href="https://open.spotify.com/track/20I8RduZC2PWMWTDCZuuAN" target="_blank" rel="noopener">Sözleriyle dinle 🎵</a>
+      <p class="note">Spotify'da aşağı kaydır, sözler orada 💕</p>
+    </div>
   </section>
 
   <div id="rain"></div>
@@ -307,16 +370,23 @@
       pleas: ['Lütfenal.', 'Çokgüzelbak.', 'Alırsan senin dudaklarınıyerib.'],
       onAccept() {
         const song = $('song');
-        song.play().catch(() => $('playFallback').classList.remove('hidden'));
+        song.play().catch(() => {});
         show('gift');
         startRain();
       },
     });
 
-    // Tarayıcı otomatik çalmayı engellerse küçük bir oynat butonu çıkar.
-    $('playFallback').addEventListener('click', () => {
-      $('song').play().then(() => $('playFallback').classList.add('hidden')).catch(() => {});
+    // Oynat/durdur butonu (tarayıcı otomatik çalmayı engellerse buradan başlatılır).
+    const song = $('song');
+    song.addEventListener('play', () => { $('playPause').textContent = '❚❚'; });
+    song.addEventListener('pause', () => { $('playPause').textContent = '▶'; });
+    $('playPause').addEventListener('click', () => {
+      if (song.paused) song.play().catch(() => {});
+      else song.pause();
     });
+
+    // Spotify'a giderken sitedeki şarkı dursun, iki şarkı üst üste çalmasın.
+    $('spotify').addEventListener('click', () => song.pause());
 
     function startRain() {
       const rain = $('rain');
